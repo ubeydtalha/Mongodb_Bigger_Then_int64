@@ -19,11 +19,11 @@ I turned integer and float values ​​into an object (dict) and added its valu
 
 This function recursively finds integer and float values ​​and converts them to objects.
 ```python
-def int_to_str(data : Union[dict,list]):
+def int_to_str(self,data : Union[dict,list]):
     """
-    Convert all int to str in a list or dict
+    Convert all int and float to str in a list or dict
     """
-    
+
     try:
         data_ = {}
         list_ = []
@@ -32,9 +32,15 @@ def int_to_str(data : Union[dict,list]):
                 if isinstance(data[i],(int)):
                     if data[i] > 1 :
                         list_.append({"CUSTOM_NUMBER":"CUSTOM_NUMBER","value":str(data[i]), "type":"int"})
+                    else: 
+                        data_[key] = data[key]
                 elif isinstance(data[i],(float)):
                     if data[i] > 1 :
-                        list_.append({"CUSTOM_NUMBER":"CUSTOM_NUMBER","value":str(data[i]), "type":"float"})
+                       list_.append({"CUSTOM_NUMBER":"CUSTOM_NUMBER","value":str(data[i]), "type":"float"})
+                    else: 
+                        data_[key] = data[key]
+
+
                 elif isinstance(data[i],dict):
                     list_.append(self.int_to_str(data[i]))
                 elif isinstance(data[i],list):
@@ -44,22 +50,28 @@ def int_to_str(data : Union[dict,list]):
             return list_
         elif isinstance(data,dict):
             for key,value in data.items():
-                if isinstance(data[key],(int)):
+                if isinstance(data[key],(int)) and is:
                     if value > 1:
                         data_[key] = {"CUSTOM_NUMBER":"CUSTOM_NUMBER","value":str(data[key]), "type":"int"}
+                    else: 
+                        data_[key] = data[key]
                 elif isinstance(data[key],(float)):
                     if value > 1:
                         data_[key] = {"CUSTOM_NUMBER":"CUSTOM_NUMBER","value":str(data[key]), "type":"float"}
+                    else: 
+                        data_[key] = data[key]
                 elif isinstance(value,dict):
                     data_[key] = self.int_to_str(value)
                 elif isinstance(value,list):
                     data_[key] = self.int_to_str(value)
                 else:
                     data_[key] = data[key]
-        
-        return data_
+
+            return data_
+        else:
+            return data
     except Exception as e:
-        print(e)
+        exception_printer(e)
 ```
 
 Note : I wanted the values ​​to be greater than one here, but you may want them to be greater than the maximum int64 value (9223372036854775807).
@@ -73,7 +85,7 @@ when i do a save to database like this.
 After doing this process, when I wanted a data in the database, it had to be returned to me in its original format, so I wrote the following function.
 
 ```python
-def str_to_int(data):
+def str_to_int(self,data):
     """
     Convert all str to int in a list or dict
     """
@@ -82,15 +94,21 @@ def str_to_int(data):
         list_ = []
         if isinstance(data,list):
             for i in range(len(data)):
-                
+
                 if isinstance(data[i],dict):
 
                     if data[i].get("CUSTOM_NUMBER") == "CUSTOM_NUMBER":
                         if data[i].get("type") == "int":
-                            list_.append(int(data[i].get("value",0)))
+                            try:
+                                list_.append(int(data[i].get("value",0)))
+                            except Exception:
+                                list_.append(data[i])
                         elif data[i].get("type") == "float":
-                            list_.append(float(data[i].get("value",0)))
-                    
+                            try:
+                                list_.append(float(data[i].get("value",0)))
+                            except Exception:
+                                list_.append(data[i])
+
                         continue
                     list_.append(self.str_to_int(data[i]))
                 elif isinstance(data[i],list):
@@ -101,20 +119,28 @@ def str_to_int(data):
 
         elif isinstance(data,dict):
             for key,value in data.items():
-                
+
                 if isinstance(value,dict):
                     if data[key].get("CUSTOM_NUMBER") == "CUSTOM_NUMBER":
-                        if data[key].get("type") == "int":
-                            data_[key] = int(data[key].get("value",0))
+                        if data[key].get("type") == "int" :
+                            try:
+                                data_[key] = int(data[key].get("value",0))
+                            except Exception:
+                                data_[key] = data[key].get("value",0)
                         elif data[key].get("type") == "float":
-                            data_[key] = float(data[key].get("value",0))
+                            try:
+                                data_[key] = float(data[key].get("value",0))
+                            except Exception:
+                                data_[key] = data[key].get("value",0)
                         continue
                     data_[key] = self.str_to_int(value)
                 elif isinstance(value,list):
                     data_[key] = self.str_to_int(value)
                 else:
                     data_[key] = value
-        return data_
+            return data_
+        else:
+            return data
     except Exception as e:
         exception_printer(e)
 ```
