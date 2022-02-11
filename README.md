@@ -76,6 +76,8 @@ def int_to_str(self,data : Union[dict,list]):
 
 Note : I wanted the values ​​to be greater than one here, but you may want them to be greater than the maximum int64 value (9223372036854775807).
 
+It shouldn't be forget that bool type is subclasses of int so True or False values equel 1 or 0.
+![StackOverFlow](https://stackoverflow.com/questions/37888620/comparing-boolean-and-int-using-isinstance)
 
 when i do a save to database like this.
 
