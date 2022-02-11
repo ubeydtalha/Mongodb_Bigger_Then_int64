@@ -1,5 +1,5 @@
 
-# Usage/
+# Usage
 
 ## Any Mongodb Driver
 
