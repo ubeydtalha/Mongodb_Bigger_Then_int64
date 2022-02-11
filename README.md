@@ -1,10 +1,15 @@
 
 # Usage
+## Note
+
+Note that you will not be able to perform numerical operations in your database with this method .
+
+Maybe, as a better method, instead of converting to str, it can be made into 64-bit arrays and numeric operations can be provided.
 
 ## For Any Mongodb Driver
 
 If you try to insert any integer which is bigger than 64 bit , The library you are using will probably throw an error.
-Note that you will not be able to perform numerical operations in your database with this method .
+
 ![prof2](https://i.ibb.co/C8MG8dB/resim-2022-02-11-035339.png)
 
 In this case, two ideas came to my mind, either I was going to convert the numbers into strings and add a text with the type in front of them, and after receiving it, it would be converted to its original type according to that text, or I would use the method I mentioned here.
